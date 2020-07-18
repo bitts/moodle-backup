@@ -19,7 +19,9 @@ export MYSQL_DUMP=$(which mysqldump)
 #### Inicio das variáveis do sistema ####
 
 #pasta onde esta o sistema moodle
-export MDL_FOLDER='/var/www/html/'#pasta local onde iram ficar os arquivos de backup realizados diariamente do mysql e da moodledata
+export MDL_FOLDER='/var/www/html/'
+
+#pasta local onde iram ficar os arquivos de backup realizados diariamente do mysql e da moodledata / backup diário
 export BKP_FOLDER_TMP='/backup/bkp/'
 
 #Nome do arquivo onde será colocado o conteudo do backup do banco mysql, arquivo gerado será no formato .sql
@@ -38,7 +40,7 @@ export MYSQL_FILE=/var/www/html/config_mysql.cnf
 export MYSQL_LOGS_ERROR=database.err
 
 #logs do tar.gz
-export BKP_LOG_TARGZ=/var/www/html/bkp/log_targz[${ID}].log
+export BKP_LOG_TARGZ=/backup/bkp/log_targz[${ID}].log
 
 #Mantar os último N arquivos
 export TOTAL_FILES=6
@@ -61,7 +63,7 @@ fi
 
 #compactando a moodledata de excluindo pastas de acordo com documentação encontrada na internet
 logger "[BKPMDL] Inicio do Backup do moodledata"
-tar -czf ${BKP_FOLDER_TMP}${BKP_MDL_DATA_FILE}[${ID}].tar.gz --exclude='${MDL_FOLDER}moodledata/cache' --exclude='${MDL_FOLDER}moodledata/localcache' --exclude='${MDL_FOLDER}moodledata/sessions' --exclude='${MDL_FOLDER}moodledata/temp' --exclude='${MDL_FOLDER}moodledata/trashdir' ${MDL_FOLDER}/moodledata 
+tar -cvzf ${BKP_FOLDER_TMP}${BKP_MDL_DATA_FILE}[${ID}].tar.gz --exclude='${MDL_FOLDER}moodledata/cache' --exclude='${MDL_FOLDER}moodledata/localcache' --exclude='${MDL_FOLDER}moodledata/sessions' --exclude='${MDL_FOLDER}moodledata/temp' --exclude='${MDL_FOLDER}moodledata/trashdir' ${MDL_FOLDER}/moodledata > ${BKP_LOG_TARGZ}
 
 #verifica se a pasta do ultimo backup completo existe
 if [ -d ${BKP_FOLDER_OFC} ]; then

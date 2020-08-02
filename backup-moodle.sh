@@ -73,6 +73,13 @@ else
         mkdir -p ${BKP_FOLDER_OFC}
 fi
 
+#verifica se possui espaço em disco
+FREE=$(df --output=avail -h "$BKP_FOLDER_OFC" | sed '1d;s/[^0-9]//g')
+if [ $FREE -lt 50 ]
+then
+    	logger "[BKPMDL] Existe menos de 50Gb de espaço disponível para Backup na pasta."
+fi
+
 #backup da moodledata e do backup do mysql / backup completo
 tar -czvf "${BKP_FOLDER_OFC}bkp_completo_moodle[${ID}].tar.gz" ${BKP_FOLDER_TMP}*${ID}* > ${BKP_LOG_TARGZ}
 if [ "$?" -eq 0 ]

@@ -53,7 +53,7 @@ logger "Inicio do Backup - Moodle Database"
 ${MYSQL_DUMP} --defaults-extra-file=${MYSQL_FILE} --log-error=${MYSQL_LOGS_ERROR} --skip-lock-tables --all-databases > ${BKP_FOLDER_TMP}${BKP_SQL_FILE}[${ID}].sql
 
 
-if [ "$?" -eq 0 ]
+if [ $? -eq 0 ]
 then
         logger "[BKPMDL] Backup da Base de Dados do Moodle realizado com sucesso."
 else
@@ -91,7 +91,7 @@ fi
 
 #remover arquivos temporarios com mais de uma semana
 find ${BKP_FOLDER_TMP}* -mtime +${TOTAL_FILES} -exec rm {} \;
-if [ "$?" -eq 0 ]
+if [ $? -eq 0 ]
 then
         logger "[BKPMDL] Remoção de arquivos temporarios antigos executado com sucesso."
 else

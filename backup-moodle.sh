@@ -13,8 +13,8 @@ datainicial=`date +%s`
 logger "[BKPMDL] Inicio do backup do moodle."
 
 #Para uso interno de controle do script
-export ID=$(date +"%Y-%m-%d")
-export MYSQL_DUMP=$(which mysqldump)
+ID=$(date +"%Y-%m-%d")
+MYSQL_DUMP=$(which mysqldump)
 
 #### Inicio das variáveis do sistema ####
 
@@ -50,9 +50,7 @@ export TOTAL_FILES=6
 [ ! -d "$BKP_FOLDER_TMP" ] && mkdir -p ${BKP_FOLDER_TMP} || logger "[BKPMDL] Pasta ${BKP_FOLDER_TMP} já existe."
 
 logger "Inicio do Backup - Moodle Database"
-${MYSQL_DUMP} --defaults-extra-file=${MYSQL_FILE} --log-error=${MYSQL_LOGS_ERROR} --skip-lock-tables --all-databases > ${BKP_FOLDER_TMP}${BKP_SQL_FILE}[${ID}].sql
-
-
+${MYSQL_DUMP} --defaults-extra-file=${MYSQL_FILE} --log-error=${MYSQL_LOGS_ERROR} --skip-lock-tables --all-databases > ${BKP_FOLDER_TMP}${BKP_SQL_FILE}[${ID}].sql > ${BKP_LOG_TARGZ}
 if [ $? -eq 0 ]
 then
         logger "[BKPMDL] Backup da Base de Dados do Moodle realizado com sucesso."
@@ -63,7 +61,14 @@ fi
 
 #compactando a moodledata de excluindo pastas de acordo com documentação encontrada na internet
 logger "[BKPMDL] Inicio do Backup do moodledata"
-tar -cvzf ${BKP_FOLDER_TMP}${BKP_MDL_DATA_FILE}[${ID}].tar.gz --exclude='${MDL_FOLDER}moodledata/cache' --exclude='${MDL_FOLDER}moodledata/localcache' --exclude='${MDL_FOLDER}moodledata/sessions' --exclude='${MDL_FOLDER}moodledata/temp' --exclude='${MDL_FOLDER}moodledata/trashdir' ${MDL_FOLDER}/moodledata > ${BKP_LOG_TARGZ}
+tar -czf ${BKP_FOLDER_TMP}${BKP_MDL_DATA_FILE}[${ID}].tar.gz --exclude='${MDL_FOLDER}moodledata/cache' --exclude='${MDL_FOLDER}moodledata/localcache' --exclude='${MDL_FOLDER}moodledata/sessions' --exclude='${MDL_FOLDER}moodledata/temp' --exclude='${MDL_FOLDER}moodledata/trashdir' ${MDL_FOLDER}/moodledata > ${BKP_LOG_TARGZ}
+if [ $? -eq 0 ]
+then
+        logger "[BKPMDL] Arquivos da pasta ${MDL_FOLDER}/moodledata compactados com sucesso na pasta temporaria ${BKP_FOLDER_TMP}."
+else
+        logger "[BKPMDL] Não foi possível compactar arquivos da pasta ${MDL_FOLDER}/moodledata na pasta temporaria ${BKP_FOLDER_TMP}. Script interrompido."
+        exit 1;
+fi
 
 #verifica se a pasta do ultimo backup completo existe
 if [ -d ${BKP_FOLDER_OFC} ]; then
@@ -81,12 +86,13 @@ then
 fi
 
 #backup da moodledata e do backup do mysql / backup completo
-tar -czvf "${BKP_FOLDER_OFC}bkp_completo_moodle[${ID}].tar.gz" ${BKP_FOLDER_TMP}*${ID}* > ${BKP_LOG_TARGZ}
-if [ "$?" -eq 0 ]
+tar -czf "${BKP_FOLDER_OFC}bkp_completo_moodle[${ID}].tar.gz" ${BKP_FOLDER_TMP}*${ID}* > ${BKP_LOG_TARGZ} > ${BKP_LOG_TARGZ}
+if [ $? -eq 0 ]
 then
         logger "[BKPMDL] Backup completo executado com sucesso."
 else
-        logger "[BKPMDL] Não foi possível realizar o backup completo."
+        logger "[BKPMDL] Não foi possível realizar o backup completo. Script interrompido e será finalizado."
+        exit 1;
 fi
 
 #remover arquivos temporarios com mais de uma semana

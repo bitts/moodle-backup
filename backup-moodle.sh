@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ----------------------------------------------
-# Moodle Backup Create by 2º Ten Bittencourt
+# Moodle Backup Create by Marcelo Valvassori Bittencourt
 # Version: 1.0v
 # Created: 01/07/2020
 # Upgrade: 07/07/2020

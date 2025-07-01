@@ -14,7 +14,6 @@ Exemplo:
 # About
 Script de Backup do Moodle para agendamento no Crontab (linux)
 
-[![GitHub license](https://img.shields.io/apm/l/vim-mode.svg)](LICENSE)
 
 ## Credits
 
